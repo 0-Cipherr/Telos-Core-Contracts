@@ -32,34 +32,24 @@ contract VaultFactory {
     }
 
     modifier onlyAUhtorized(address attemptedUser) {
-        require(
-            attemptedUser == authroized || attemptedUser == vaultRegistry,
-            "Not authrized to perform "
-        );
+        require(attemptedUser == authroized || attemptedUser == vaultRegistry, "Not authrized to perform ");
         _;
     }
 
-    function previewDeposit(
-        uint256 vaultId,
-        uint256 _amount
-    ) public view returns (uint256 _shares) {
+    function previewDeposit(uint256 vaultId, uint256 _amount) public view returns (uint256 _shares) {
         _shares = vaultsDeployed[vaultId].vault.previewDeposit(_amount);
     }
 
-    function previewWithdraw(
-        uint256 _vaultId,
-        uint256 _shares
-    ) public view returns (uint256 _assets) {
+    function previewWithdraw(uint256 _vaultId, uint256 _shares) public view returns (uint256 _assets) {
         _assets = vaultsDeployed[_vaultId].vault.previewWithdraw(_shares);
     }
 
-    function getDepositorInfo(
-        uint256 _vaultId,
-        address _depositorInfo
-    ) public view returns (VaultHelper.DepositorInfo memory _depositor) {
-        _depositor = vaultsDeployed[_vaultId].vault.getDepositorInfo(
-            _depositorInfo
-        );
+    function getDepositorInfo(uint256 _vaultId, address _depositorInfo)
+        public
+        view
+        returns (VaultHelper.DepositorInfo memory _depositor)
+    {
+        _depositor = vaultsDeployed[_vaultId].vault.getDepositorInfo(_depositorInfo);
     }
 
     function setVaultImplementation(address vault) public {
@@ -90,37 +80,22 @@ contract VaultFactory {
         }
     }
 
-    function approveVault(
-        uint256 vaultId,
-        IERC20 asset,
-        uint256 _amount
-    ) public {
+    function approveVault(uint256 vaultId, IERC20 asset, uint256 _amount) public {
         //
         address vault = getVaultAddress(vaultId); //spender is the vault address
         asset.approve(vault, _amount);
     }
 
-    function setVaultsDeployed(
-        uint256 vaultId,
-        VaultHelper.Vault memory vaultInfo
-    ) public onlyAUhtorized(msg.sender) {
+    function setVaultsDeployed(uint256 vaultId, VaultHelper.Vault memory vaultInfo) public onlyAUhtorized(msg.sender) {
         vaultsDeployed[vaultId] = vaultInfo;
     }
 
-    function setStrategyId(
-        uint256 vaultId,
-        uint256 strategyId,
-        bytes memory depositCallback
-    ) public {
+    function setStrategyId(uint256 vaultId, uint256 strategyId, bytes memory depositCallback) public {
         vaultsDeployed[vaultId].vault.setStrategy(strategyId, depositCallback);
         //witdraw fromcurrent deposits into next
     }
 
-    function updateVaultTVL(
-        uint256 vaultId,
-        uint256 value,
-        bool isDeduction
-    ) public {
+    function updateVaultTVL(uint256 vaultId, uint256 value, bool isDeduction) public {
         if (isDeduction == false) {
             vaultsDeployed[vaultId].tvl += value;
         } else {
@@ -135,11 +110,7 @@ contract VaultFactory {
         vaultsDeployed[vaultId].allTimeVolume += amount;
     }
 
-    function updateAuthorized(
-        uint256 vaultId,
-        address user,
-        bool shouldAppend
-    ) public {
+    function updateAuthorized(uint256 vaultId, address user, bool shouldAppend) public {
         if (shouldAppend) {
             vaultsDeployed[vaultId].authorized.push(user);
         } else {
@@ -147,38 +118,20 @@ contract VaultFactory {
         }
     }
 
-    function transferFromRegistry(
-        IERC20 asset,
-        address _from,
-        address _to,
-        uint256 _amount
-    ) public {
+    function transferFromRegistry(IERC20 asset, address _from, address _to, uint256 _amount) public {
         asset.transferFrom(_from, _to, _amount);
     }
 
-    function isApproved(
-        IERC20 _asset,
-        address _owner,
-        address _spender,
-        uint256 _amount
-    ) public view returns (bool) {
+    function isApproved(IERC20 _asset, address _owner, address _spender, uint256 _amount) public view returns (bool) {
         uint256 allowance = _asset.allowance(_owner, _spender);
         return _amount <= allowance;
     }
 
     error NotApproved(uint256 _amount, uint256 vaultId);
 
-    function deposit(
-        uint256 vaultId,
-        uint256 assets,
-        address receiver
-    ) public payable {
+    function deposit(uint256 vaultId, uint256 assets, address receiver) public payable {
         // vaultsDeployed[vaultId].depositAsset.transferFrom(address(vaultRegistry), address(this), assets); depreceated
-        vaultsDeployed[vaultId].vault.depositAssets{value: msg.value}(
-            assets,
-            receiver,
-            bytes("")
-        );
+        vaultsDeployed[vaultId].vault.depositAssets{value: msg.value}(assets, receiver, bytes(""));
         updateVaultTVL(vaultId, assets, false);
         updateVaultallTimeVolume(vaultId, assets);
     }
@@ -197,29 +150,14 @@ contract VaultFactory {
     //     }
     // }
 
-    function withdraw(
-        uint256 vaultId,
-        uint256 _shares,
-        address receiver,
-        bytes calldata callBackStrategy
-    ) public {
-        vaultsDeployed[vaultId].vault.withdrawAssets(
-            _shares,
-            receiver,
-            callBackStrategy
-        );
+    function withdraw(uint256 vaultId, uint256 _shares, address receiver, bytes calldata callBackStrategy) public {
+        vaultsDeployed[vaultId].vault.withdrawAssets(_shares, receiver, callBackStrategy);
     }
 
-    function deployVaultCrossChain(
-        uint256 _vaultId,
-        IERC20 vaultAsset,
-        bytes memory deployVaultParams
-    ) public {
+    function deployVaultCrossChain(uint256 _vaultId, IERC20 vaultAsset, bytes memory deployVaultParams) public {
         require(vaultImplementation != address(0), "No implementation set");
-        VaultHelper.VaultDeployParams memory deployParams = abi.decode(
-            deployVaultParams,
-            (VaultHelper.VaultDeployParams)
-        );
+        VaultHelper.VaultDeployParams memory deployParams =
+            abi.decode(deployVaultParams, (VaultHelper.VaultDeployParams));
         // /eip1167 impelementation upgradable contract save space
         //good standard for factories
 
@@ -233,44 +171,26 @@ contract VaultFactory {
         currentVaultId = _vaultId + 1;
     }
 
-    function intializeVault(
-        address vault,
-        IERC20 vaultAsset,
-        VaultHelper.VaultDeployParams memory deployParams
-    ) public {
-        VaultManager(payable(vault)).__initialize_vault_(
-            deployParams,
-            vaultAsset,
-            strategyAdapter
-        );
+    function intializeVault(address vault, IERC20 vaultAsset, VaultHelper.VaultDeployParams memory deployParams)
+        public
+    {
+        VaultManager(payable(vault)).__initialize_vault_(deployParams, vaultAsset, strategyAdapter);
         (deployParams, strategyAdapter);
     }
 
-    function setupVault(
-        uint256 _vaultId,
-        address vault,
-        bytes memory deployParams,
-        address[] memory vaultAuthorized
-    ) public {
-        VaultHelper.VaultDeployParams memory vaultDeployParams = abi.decode(
-            deployParams,
-            (VaultHelper.VaultDeployParams)
-        );
+    function setupVault(uint256 _vaultId, address vault, bytes memory deployParams, address[] memory vaultAuthorized)
+        public
+    {
+        VaultHelper.VaultDeployParams memory vaultDeployParams =
+            abi.decode(deployParams, (VaultHelper.VaultDeployParams));
         setVaultAddress(_vaultId, vault);
         registerVault(vaultDeployParams, IVaultManager(vault), vaultAuthorized);
     }
 
-    function deployVault(
-        bytes memory deployVaultParams
-    ) public returns (uint256 vaultId, IVaultManager vaultDeployed) {
+    function deployVault(bytes memory deployVaultParams) public returns (uint256 vaultId, IVaultManager vaultDeployed) {
         require(vaultImplementation != address(0), "No implementation set");
-        (
-            IERC20 vaultAsset,
-            VaultHelper.VaultDeployParams memory deployParams
-        ) = abi.decode(
-                deployVaultParams,
-                (IERC20, VaultHelper.VaultDeployParams)
-            );
+        (IERC20 vaultAsset, VaultHelper.VaultDeployParams memory deployParams) =
+            abi.decode(deployVaultParams, (IERC20, VaultHelper.VaultDeployParams));
 
         address vault = clonseImplementation();
 
@@ -310,10 +230,11 @@ contract VaultFactory {
         increaseVaultId(); // upthe vualt id evety time
     }
 
-    function getDepositor(
-        uint256 vaultId,
-        address _user
-    ) public view returns (VaultHelper.DepositorInfo memory _depositor) {
+    function getDepositor(uint256 vaultId, address _user)
+        public
+        view
+        returns (VaultHelper.DepositorInfo memory _depositor)
+    {
         _depositor = vaultsDeployed[vaultId].vault.getDepositorInfo(_user);
     }
 
@@ -321,40 +242,25 @@ contract VaultFactory {
         ++currentVaultId;
     }
 
-    function getvault(
-        uint256 vaultId
-    )
-        public
-        view
-        onlyAUhtorized(msg.sender)
-        returns (VaultHelper.Vault memory vault)
-    {
+    function getvault(uint256 vaultId) public view onlyAUhtorized(msg.sender) returns (VaultHelper.Vault memory vault) {
         vault = vaultsDeployed[vaultId];
     }
 
-    function verifyChances(
-        address _owner
-    ) public view onlyAUhtorized(msg.sender) {
+    function verifyChances(address _owner) public view onlyAUhtorized(msg.sender) {
         uint256 chance = getOwnerChangeChances(_owner);
         require(chance < changeOwnerMax, "You ran out of vault owner canges ");
     } //emergency use case one time use
 
-    function changeVaultOwner(
-        uint256 vaultId
-    ) public onlyAUhtorized(msg.sender) {
+    function changeVaultOwner(uint256 vaultId) public onlyAUhtorized(msg.sender) {
         VaultHelper.Vault memory userVault = vaultsDeployed[vaultId];
         incrementChangeOwnerChances(userVault.creator);
     }
 
-    function getOwnerChangeChances(
-        address _owner
-    ) public view onlyAUhtorized(msg.sender) returns (uint256) {
+    function getOwnerChangeChances(address _owner) public view onlyAUhtorized(msg.sender) returns (uint256) {
         return changeOwnerChances[_owner];
     }
 
-    function incrementChangeOwnerChances(
-        address _owner
-    ) public onlyAUhtorized(msg.sender) {
+    function incrementChangeOwnerChances(address _owner) public onlyAUhtorized(msg.sender) {
         changeOwnerChances[_owner] += 1;
     }
 
