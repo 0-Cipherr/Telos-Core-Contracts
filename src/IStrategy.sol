@@ -1,84 +1,33 @@
-// SPDX-License-Identifier: UNLICENSED
+// SPDX-License-Identifier: MIT
 pragma solidity ^0.8.24;
 
 interface IStrategy {
-    /*//////////////////////////////////////////////////////////////
-                                EVENTS
-    //////////////////////////////////////////////////////////////*/
+    struct StrategyConfig {
+        address asset;
+        address protocol;
+        address vault;
+        uint256 chainId;
+        uint256 allocation;
+        uint256 maxDeposit;
+        uint256 minDeposit;
+    }
 
-    event Deposited(address indexed vault, uint256 assets);
+    function initialize(
+        StrategyConfig calldata config,
+        bytes calldata protocolConfig
+    ) external;
 
-    event Withdrawn(address indexed vault, uint256 assets);
+    function deposit(uint256 amount) external returns (uint256 shares);
 
-    event Harvested(address indexed vault, uint256 totalAssets, int256 profitOrLoss);
+    function withdraw(uint256 amount) external returns (uint256 assets);
 
-    /*//////////////////////////////////////////////////////////////
-                                METADATA
-    //////////////////////////////////////////////////////////////*/
+    function harvest() external returns (uint256 profit);
 
-    /**
-     * @notice Asset this strategy accepts.
-     *
-     * Example:
-     * USDC strategy => USDC address.
-     */
-    function asset() external view returns (address);
-
-    /**
-     * @notice Vault that controls this strategy.
-     */
-    function vault() external view returns (address);
-
-    /*//////////////////////////////////////////////////////////////
-                              ACCOUNTING
-    //////////////////////////////////////////////////////////////*/
-
-    /**
-     * @notice Current amount of underlying assets controlled
-     *         by this strategy.
-     *
-     * Includes principal + profit - losses.
-     */
     function totalAssets() external view returns (uint256);
 
-    /*//////////////////////////////////////////////////////////////
-                           CAPITAL MANAGEMENT
-    //////////////////////////////////////////////////////////////*/
+    function getAPY() external view returns (uint256);
 
-    /**
-     * @notice Deploy assets into the underlying protocol.
-     *
-     * Example:
-     * USDC -> Aave supply()
-     */
-    function deposit(uint256 assets, bytes calldata data) external returns (uint256 assetsDeployed);
+    function getConfig() external view returns (StrategyConfig memory);
 
-    /**
-     * @notice Pull assets out of the underlying protocol
-     *         and return them to the Vault.
-     */
-    function withdraw(uint256 assets, bytes calldata data) external returns (uint256 assetsReturned);
-
-    /**
-     * @notice Exit the entire strategy.
-     *
-     * Useful when:
-     * - removing strategy
-     * - emergency exit
-     * - migrating strategy
-     */
-    function withdrawAll(bytes calldata data) external returns (uint256 assetsReturned);
-
-    /*//////////////////////////////////////////////////////////////
-                               HARVEST
-    //////////////////////////////////////////////////////////////*/
-
-    /**
-     * @notice Updates / realizes strategy profit or loss.
-     *
-     * @return currentAssets Current strategy value.
-     * @return profitOrLoss Positive = profit.
-     *                      Negative = loss.
-     */
-    function harvest(bytes calldata data) external returns (uint256 currentAssets, int256 profitOrLoss);
+    function paused() external view returns (bool);
 }
