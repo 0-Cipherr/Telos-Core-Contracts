@@ -1,0 +1,1095 @@
+[33mcommit 916ccdfcb45b93714b15e6cf8ad2de9991717290[m[33m ([m[1;36mHEAD -> [m[1;32mmain[m[33m)[m
+Author: ExoticSolutions <1exoticeditz@gmail.com>
+Date:   Wed Oct 28 14:44:53 2026 -0400
+
+    structure change
+
+[33mcommit 28a58644ae9d60ba0f5ba587531fb323e24f1709[m
+Author: ExoticSolutions <1exoticeditz@gmail.com>
+Date:   Tue Oct 27 09:15:50 2026 -0400
+
+    considering adding deed system to my project users can sell ownership and redirect to buyers we charge a protocol feee for transdaction weer have a contract uyser deposits deed into our manager we have owner ship buyer deposits we send tdeed and send money to creator we charge smal service fee
+
+[33mcommit 54773142970de22aee73e4d60337b0949fb827b5[m
+Author: ExoticSolutions <1exoticeditz@gmail.com>
+Date:   Tue Oct 27 09:14:57 2026 -0400
+
+    considering adding deed system to my project users can sell ownership and redirect to buyers we charge a protocol feee for transdaction weer have a contract uyser deposits deed into our manager we have owner ship buyer deposits we send tdeed and send money to creator we charge smal service fee
+
+[33mcommit 0e1fa1304e82c6e953af97be2c83d363afc8fbd5[m
+Author: ExoticSolutions <1exoticeditz@gmail.com>
+Date:   Fri Oct 23 11:25:25 2026 -0400
+
+    grind dont stop
+
+[33mcommit cdceda1e9bb29ec4f3a736412e90afe1d64709db[m
+Author: ExoticSolutions <1exoticeditz@gmail.com>
+Date:   Fri Oct 23 11:23:11 2026 -0400
+
+    restructure
+
+[33mcommit e3bbf12675035f51dcd36dbfb956ccc269b31f36[m
+Author: ExoticSolutions <1exoticeditz@gmail.com>
+Date:   Fri Oct 16 11:41:22 2026 -0400
+
+    cross chain vault dpeloyment works
+
+[33mcommit abfdd2d6fc99d3652f7fc1cf47c9687902152897[m
+Author: ExoticSolutions <1exoticeditz@gmail.com>
+Date:   Fri Oct 16 10:36:03 2026 -0400
+
+    Message sends now we getting hot
+
+[33mcommit 0ee5633afb967f89d6ccceb0fedb6a23247c7f46[m
+Author: ExoticSolutions <1exoticeditz@gmail.com>
+Date:   Fri Oct 16 10:00:40 2026 -0400
+
+    wrongfully adding peer added messengerPeer in vaultRegistrytest this is very important we must set and add on each registry
+
+[33mcommit 8b0a8cdef8bc131a93b6eadb1506d60fd3743a5e[m
+Author: ExoticSolutions <1exoticeditz@gmail.com>
+Date:   Fri Oct 16 09:03:30 2026 -0400
+
+    transaction goes through now tryna figue out why it gets blocked on layer zero
+
+[33mcommit 23079b04705c878e246817d903278e27420a7900[m
+Author: ExoticSolutions <1exoticeditz@gmail.com>
+Date:   Thu Oct 15 09:32:21 2026 -0400
+
+    last left offf fixing textmessengerquote inmessenger now deploy and test see if it works
+
+[33mcommit 7b43010aa5db747c837b64bff5618798de868522[m
+Author: ExoticSolutions <1exoticeditz@gmail.com>
+Date:   Thu Oct 15 09:20:13 2026 -0400
+
+    new addition when deploying update meseenger addreses in vaultregistry test we need to change onwership to registry
+
+[33mcommit 92b0adc01da404a296b3d4cde07a6e052a6d94d8[m
+Author: ExoticSolutions <1exoticeditz@gmail.com>
+Date:   Thu Oct 15 08:30:00 2026 -0400
+
+    ### LayerZero send-path config notes
+    
+    For a message sent **from Chain A to Chain B**, call  on the messenger deployed on **Chain A**.
+    
+    - : Chain B’s LayerZero Endpoint ID, not its regular chain ID.
+    - : Send Library address on Chain A for this OApp’s A → B route.
+    - : Executor address configured for the A → B route. It handles delivery/execution on Chain B.
+    - : Maximum message size supported by that route’s Executor.
+    - : Required DVN address(es) for the A → B send configuration. If using multiple DVNs,  must match the array length and the DVN list must be sorted as LayerZero requires.
+    - : Number of blocks on Chain A the DVN waits before verifying the message.
+    - These route-specific values should come from LayerZero’s config/default checker for the exact A → B pathway; don’t guess them or assume reverse-direction values are the same.
+    
+    **Example:** For Base Sepolia → Arbitrum Sepolia, configure on Base Sepolia and use Arbitrum Sepolia’s EID as . For the reverse route, configure on Arbitrum Sepolia and use Base Sepolia’s EID.
+    
+    The destination messenger on Chain B also needs matching receive-side library and DVN configuration for messages from Chain A, keyed by Chain A’s EID. This function configures only the send path.
+    
+    The LayerZero peer is a separate setting: it is the remote messenger address, not the DVN, Executor, or Send Library.
+
+[33mcommit dfdf2637989bf823876e0e254d63d2fc7d875685[m
+Author: ExoticSolutions <1exoticeditz@gmail.com>
+Date:   Thu Oct 15 07:28:34 2026 -0400
+
+    structureal problem in messenger should not deploy seperate oapps just commnunicate messenger to messenger makes things simpler
+
+[33mcommit 764c5f39179a9d98abd64736fd75f9c77fe40afd[m
+Author: ExoticSolutions <1exoticeditz@gmail.com>
+Date:   Wed Oct 14 23:36:11 2026 -0400
+
+    **Commit note — **
+    
+    - Current Base sender OApp  targets Arbitrum Registry ; the Registry is not a LayerZero OApp, causing **Not Initializable**.
+    - Before sending again, choose a real destination OApp: either the Arbitrum Messenger or a matching per-vault .
+    - Set reciprocal peers: Base sender → destination OApp for EID ; destination OApp → Base sender for EID .
+    - Ensure the message payload matches the destination OApp’s receive handler and forwarding path.
+    - Verify the Endpoint reports the path initializable, then quote and send a **new** message. The existing blocked packet still targets the Registry.
+    - Keep the chain-local DVNs aligned: Base sender uses Base’s DVN ; Arbitrum receiver expects Arbitrum’s DVN . Current confirmations, 3 outbound and 2 inbound, satisfy the shown threshold.
+    
+    **Design note:** A shared Messenger can only store one peer per remote EID. Since source s are per-vault, supporting multiple vaults may require a receiver OApp per vault or a stable shared sender.
+
+[33mcommit a5abe4829c1e131b2816560452f1a4a40389fd89[m
+Author: ExoticSolutions <1exoticeditz@gmail.com>
+Date:   Wed Oct 14 12:17:45 2026 -0400
+
+    updates almost done crossc hain making crosschain dpeloy function payable
+
+[33mcommit 3ffc987475e64809058b083332fe12a545775852[m
+Author: ExoticSolutions <1exoticeditz@gmail.com>
+Date:   Wed Oct 14 02:23:46 2026 -0400
+
+    fixing peers and adding registry in VaultRegistry.sol
+
+[33mcommit a171c1a5fa84ad0a535909b411c4ac846e32b542[m
+Author: ExoticSolutions <1exoticeditz@gmail.com>
+Date:   Wed Oct 14 02:02:49 2026 -0400
+
+    fixing peers and adding registry in VaultRegistry.sol
+
+[33mcommit c34a058b6c6f47f6b1f9380e866964e322908646[m
+Author: ExoticSolutions <1exoticeditz@gmail.com>
+Date:   Tue Oct 13 15:23:43 2026 -0400
+
+    Draft commit message — **not applied**:
+
+[33mcommit a949293ce0985369ed2d419ce44049d8a27bcea5[m
+Author: ExoticSolutions <1exoticeditz@gmail.com>
+Date:   Tue Oct 13 15:23:28 2026 -0400
+
+    Draft commit message — **not applied**:
+
+[33mcommit 1e39494a5ececea691b00c33df161038b89a1ec2[m
+Author: ExoticSolutions <1exoticeditz@gmail.com>
+Date:   Tue Oct 13 10:45:35 2026 -0400
+
+    updates working analyzing the mesenger cooking
+
+[33mcommit 9d15340355796f5329e5fdb24ad8914738f56a50[m
+Author: ExoticSolutions <1exoticeditz@gmail.com>
+Date:   Tue Oct 13 09:44:40 2026 -0400
+
+    native deposits working
+
+[33mcommit 2a8ba7c2097b14e207fc301c59af73fc2548192b[m
+Author: ExoticSolutions <1exoticeditz@gmail.com>
+Date:   Tue Oct 13 04:39:44 2026 -0400
+
+    now fix withdraw accounting
+
+[33mcommit e34e6f9d1a7bf174a5d5cc71050ad7d86873f732[m
+Author: ExoticSolutions <1exoticeditz@gmail.com>
+Date:   Mon Oct 12 07:59:50 2026 -0400
+
+    Avenor
+
+[33mcommit 65a8465c9cf2ea959013946f6b6510744b9e9c66[m
+Author: ExoticSolutions <1exoticeditz@gmail.com>
+Date:   Mon Oct 12 01:44:54 2026 -0400
+
+    updates abstrat
+
+[33mcommit 1dd4437c14b54ceb79e738217aa7b669677c758c[m
+Author: ExoticSolutions <1exoticeditz@gmail.com>
+Date:   Mon Oct 12 01:41:51 2026 -0400
+
+    updates abstrat
+
+[33mcommit 35a60e87980ff2d31bc7ae0d64dd35cc457477f1[m
+Author: ExoticSolutions <1exoticeditz@gmail.com>
+Date:   Mon Oct 12 01:38:51 2026 -0400
+
+    updates abstrat
+
+[33mcommit b13fd1a4359af663865989e74cb0c9c88bfe3ae8[m
+Author: ExoticSolutions <1exoticeditz@gmail.com>
+Date:   Fri Oct 9 11:43:37 2026 -0400
+
+    idea for bridgin have a function that ca call any address and any function set u guards for it. this function will pass in the quote from the api and bridge to another chain use only bridge apis that give quotes ad allow for onchain execution for developers set up these functions then fincish withdraw and add the birdge conditional logic for this to work properly so when vaut doesnt have funcds we get for ssomewhere else
+
+[33mcommit c88b6cf4990015faed3e71fb9a035840c962eabd[m
+Author: ExoticSolutions <1exoticeditz@gmail.com>
+Date:   Fri Oct 9 11:43:26 2026 -0400
+
+    idea for bridgin have a function that ca call any address and any function set u guards for it. this function will pass in the quote from the api and bridge to another chain use only bridge apis that give quotes ad allow for onchain execution for developers set up these functions then fincish withdraw and add the birdge conditional logic for this to work properly so when vaut doesnt have funcds we get for ssomewhere else
+
+[33mcommit 18b568b76155ad564d467e8a1b08656cb5b1ae61[m
+Author: ExoticSolutions <1exoticeditz@gmail.com>
+Date:   Fri Oct 9 11:31:04 2026 -0400
+
+    build mistake
+
+[33mcommit 68c595763619203328d8f718cdd570029526837a[m
+Author: ExoticSolutions <1exoticeditz@gmail.com>
+Date:   Fri Oct 9 11:29:55 2026 -0400
+
+    left off at VaultManager analzing and fixing withdraw function added new param to withdrawAssets determines wethere the assets being used are getting returned to another chain
+
+[33mcommit 1d1e1ee3335637a6223ef1b384cc285912e59d20[m
+Author: ExoticSolutions <1exoticeditz@gmail.com>
+Date:   Fri Oct 9 11:16:31 2026 -0400
+
+    forgot to format last commit
+
+[33mcommit d2196a65c1ec8f03e84b41f9c469d3f5470814ed[m
+Author: ExoticSolutions <1exoticeditz@gmail.com>
+Date:   Fri Oct 9 11:15:48 2026 -0400
+
+    deposit works now onto withdraw
+
+[33mcommit 9a0a3c9d5b75d68e84c4fc8d9e8bdd6fc79160d3[m
+Author: ExoticSolutions <1exoticeditz@gmail.com>
+Date:   Fri Oct 9 11:14:54 2026 -0400
+
+    chore: remove broadcast folder from remote repository
+
+[33mcommit 12d410bf1da8c0f9f22e020c5dd2873ef170b617[m
+Author: ExoticSolutions <1exoticeditz@gmail.com>
+Date:   Thu Oct 8 13:29:06 2026 -0400
+
+    resturcture registryTest follow right path dont forget to approve tokens beofre doing and adding peers to registry
+
+[33mcommit 1f7c3911f9c03b02c7c8d1a99a7532ac86d00e19[m
+Author: ExoticSolutions <1exoticeditz@gmail.com>
+Date:   Thu Oct 8 10:56:10 2026 -0400
+
+    test
+
+[33mcommit deb704b43f83b3c6ebde66bbea7559170861af68[m
+Author: ExoticSolutions <1exoticeditz@gmail.com>
+Date:   Thu Oct 8 10:42:53 2026 -0400
+
+    updates to structure added approval checkers and excecutors in registry and factory
+
+[33mcommit f9e3792c9ea5a8fbed7268fec942b907a1673905[m
+Author: ExoticSolutions <1exoticeditz@gmail.com>
+Date:   Thu Oct 8 09:00:32 2026 -0400
+
+    ok next step is decididing to add these in factory we need it so vaults are allowed to transfer factory assets into each vault function isApproved,  function userHasEnough already mad in vuat registry maybe unify it s both can access no duplicate code
+
+[33mcommit 10a0108a08b98d8949bfe689e7fa35503cf638db[m
+Author: ExoticSolutions <1exoticeditz@gmail.com>
+Date:   Thu Oct 8 08:22:42 2026 -0400
+
+    next flow to fix in vault registry when we handle deposits registry should transfer assets from user to registry then from registry it goes to factory which then forwards the assets to the selected vault remmebr to verify users acutally have the asset in hand before depositing add as much guards as possible
+
+[33mcommit 64ce4d3255e3cd5ac4e391068799a2f5a24e50b5[m
+Author: ExoticSolutions <1exoticeditz@gmail.com>
+Date:   Thu Oct 8 08:08:22 2026 -0400
+
+    we getting somewhere vault is made allowance must be set properly
+
+[33mcommit 5cff9ae606c30e1212ebbaacf717bdc8032bbb7f[m
+Author: ExoticSolutions <1exoticeditz@gmail.com>
+Date:   Wed Oct 7 20:21:10 2026 -0400
+
+    update
+
+[33mcommit 82190c94cb233cc71bbc564ca55aecdff7a53dc8[m
+Author: ExoticSolutions <1exoticeditz@gmail.com>
+Date:   Wed Oct 7 19:07:05 2026 -0400
+
+    ran into all fixing while testing
+
+[33mcommit 19a3db8ae0587c1b7d14b207ab67bcb5b9eefb3b[m
+Author: ExoticSolutions <1exoticeditz@gmail.com>
+Date:   Wed Oct 7 17:05:13 2026 -0400
+
+    updates
+
+[33mcommit b040337a0767751e8dd5bdbea0102eae76f69361[m
+Author: ExoticSolutions <1exoticeditz@gmail.com>
+Date:   Wed Oct 7 14:25:07 2026 -0400
+
+    new constructor arg for factory frogot to set implementation before doing anything
+
+[33mcommit 48d458133b157c4eac606523e99ea51f952c4431[m
+Author: ExoticSolutions <1exoticeditz@gmail.com>
+Date:   Wed Oct 7 12:40:20 2026 -0400
+
+    fixed error now vault is approved to spend for user and registry as well tx reverted before because it was not approved
+
+[33mcommit 36e345785872169dd91afd13c624d444a16136e1[m
+Author: ExoticSolutions <1exoticeditz@gmail.com>
+Date:   Wed Oct 7 10:40:41 2026 -0400
+
+    test continues
+
+[33mcommit 244170b63faedc0703b42655c491faf0ca35cd65[m
+Author: ExoticSolutions <1exoticeditz@gmail.com>
+Date:   Wed Oct 7 02:06:37 2026 -0400
+
+    so far so good testing wise
+
+[33mcommit f3ebc78bc37879cefea7831def1fe907d287ee20[m
+Author: ExoticSolutions <1exoticeditz@gmail.com>
+Date:   Wed Oct 7 00:40:44 2026 -0400
+
+    testing vault creation
+
+[33mcommit e27c4223010a9aab6c0c4f0ea5a3a36231648743[m
+Author: ExoticSolutions <1exoticeditz@gmail.com>
+Date:   Tue Oct 6 16:26:39 2026 -0400
+
+    update
+
+[33mcommit 311633742efabe01192a613fa0b4352c445072fc[m
+Author: ExoticSolutions <1exoticeditz@gmail.com>
+Date:   Tue Oct 6 11:28:19 2026 -0400
+
+    adds
+
+[33mcommit 104456411b61854403f79ac41887d1305454aa51[m
+Author: ExoticSolutions <1exoticeditz@gmail.com>
+Date:   Tue Oct 6 11:22:54 2026 -0400
+
+    flow for vault creation is ready all we need to do is add peer endpoint id and peer address in bytes32 format in thetest before running flow is dpeloy registr onyl then pass in addresses and deply vault should be speerate commands
+
+[33mcommit 5301003aa4c3da173e0cbb0c0f81c683243d117b[m
+Author: ExoticSolutions <1exoticeditz@gmail.com>
+Date:   Tue Oct 6 09:02:05 2026 -0400
+
+    updates almost done phase two of testing ceating vault and depositiing
+
+[33mcommit 362c3dee75deaa2bed53a76e1bdd45b08922268b[m
+Author: ExoticSolutions <1exoticeditz@gmail.com>
+Date:   Tue Oct 6 00:25:48 2026 -0400
+
+    deployments work now
+
+[33mcommit 4008c266853ae52e84b19369c783b0ce5bb639a1[m
+Author: ExoticSolutions <1exoticeditz@gmail.com>
+Date:   Mon Oct 5 23:57:03 2026 -0400
+
+    adding tests almost doenw ith test pt 1
+
+[33mcommit 64839c807fce133cc5a992cf82d333c663e9a978[m
+Author: ExoticSolutions <1exoticeditz@gmail.com>
+Date:   Mon Oct 5 22:10:58 2026 -0400
+
+    holy fuck my brain hrts
+
+[33mcommit 8b9c8472bd89f777fe8d97b4890cd0cff207bd6e[m
+Author: ExoticSolutions <1exoticeditz@gmail.com>
+Date:   Mon Oct 5 21:59:34 2026 -0400
+
+    holy fuck my brain hrts
+
+[33mcommit 9408a8b99e083a4d5b00690a2af643a54185530c[m
+Merge: 968952f 39316e4
+Author: Cipherr <1exoticeditz@gmail.com>
+Date:   Mon Oct 5 09:57:48 2026 -0400
+
+    Merge pull request #11 from 0-Cipherr/EIP1167-Implement-Factory
+    
+    Eip1167 implement factory
+
+[33mcommit 39316e43eb4d1633bed4b366548d94fe6ef096df[m[33m ([m[1;31morigin/EIP1167-Implement-Factory[m[33m)[m
+Author: ExoticSolutions <1exoticeditz@gmail.com>
+Date:   Mon Oct 5 09:53:53 2026 -0400
+
+    revieing rn before testing
+
+[33mcommit 8732118416e41d3f4d8bbdeea3e482e803932b4f[m
+Author: ExoticSolutions <1exoticeditz@gmail.com>
+Date:   Mon Oct 5 09:40:12 2026 -0400
+
+    updates
+
+[33mcommit 968952fc4174182657019573656dfe636778ab2b[m
+Merge: 0896480 d9d196c
+Author: Cipherr <1exoticeditz@gmail.com>
+Date:   Mon Oct 5 09:17:32 2026 -0400
+
+    Merge pull request #10 from 0-Cipherr/EIP1167-Implement-Factory
+    
+    Eip1167 implement factory
+
+[33mcommit d9d196cf627c6667c4c3a8bdcab3461ff4e74201[m
+Author: ExoticSolutions <1exoticeditz@gmail.com>
+Date:   Mon Oct 5 09:16:14 2026 -0400
+
+    Revert OpenZeppelin submodule to v5.7.0
+
+[33mcommit be5427891eedc94ffb53f5e27695ebd95125043d[m
+Author: ExoticSolutions <1exoticeditz@gmail.com>
+Date:   Mon Oct 5 09:09:56 2026 -0400
+
+    almost done with this structure looks nice and we save way more space with upgradable contracts thre grind continues
+
+[33mcommit 5f163f71d283656360ad2a4b44332b34976dbae6[m
+Author: ExoticSolutions <1exoticeditz@gmail.com>
+Date:   Sat Oct 3 20:51:36 2026 -0400
+
+    updates ignore error im still fixing left of in deployFactory() in vault factory then fixing vault manager so no constructor and intiialize function look at layer zero docks for more
+
+[33mcommit 08964803eaec2c8b6113705312d348c76620b3fe[m
+Merge: 1d210a4 dccac95
+Author: Cipherr <1exoticeditz@gmail.com>
+Date:   Sat Oct 3 19:34:51 2026 -0400
+
+    Merge pull request #9 from 0-Cipherr/refactor/vault-registry-architecture
+    
+    Refactor/vault registry architecture
+
+[33mcommit dccac956cfacc62e8aa66b7b579364221e1d18cb[m[33m ([m[1;31morigin/refactor/vault-registry-architecture[m[33m)[m
+Author: ExoticSolutions <1exoticeditz@gmail.com>
+Date:   Fri Oct 2 09:05:18 2026 -0400
+
+    refactoring deloiToken() in factory tryna save space this what we wroking on rn
+
+[33mcommit a0a2095de7c56e97337aa85c4d99fa51950a8352[m
+Author: ExoticSolutions <1exoticeditz@gmail.com>
+Date:   Thu Oct 1 09:19:45 2026 -0400
+
+    update
+
+[33mcommit 1d210a4db81a328de895a58d769845f35a3f73b5[m
+Merge: 40a1708 c674b16
+Author: Cipherr <1exoticeditz@gmail.com>
+Date:   Wed Sep 30 21:41:17 2026 -0400
+
+    Merge pull request #8 from 0-Cipherr/refactor/vault-registry-architecture
+    
+    renamed file to proper name
+
+[33mcommit c674b167681ad99d1ac6737914020ca8fa5722ff[m
+Author: ExoticSolutions <1exoticeditz@gmail.com>
+Date:   Wed Sep 30 21:40:05 2026 -0400
+
+    renamed file to proper name
+
+[33mcommit 40a17083fee3699a07f6b2a8d3e44be32252a73a[m
+Merge: bd45b62 734626c
+Author: Cipherr <1exoticeditz@gmail.com>
+Date:   Wed Sep 30 21:37:30 2026 -0400
+
+    Merge pull request #7 from 0-Cipherr/refactor/vault-registry-architecture
+    
+    Refactor/vault registry architecture
+
+[33mcommit 734626ce34d591225e97deb8dacef73da98c7e6a[m
+Author: ExoticSolutions <1exoticeditz@gmail.com>
+Date:   Wed Sep 30 21:35:48 2026 -0400
+
+    done so fucking clean excuse the language and size is good lfg now test and we done even added strategy adapte r in this feature
+
+[33mcommit c24b62a01508ee57c709622980dca39668100a1b[m
+Author: ExoticSolutions <1exoticeditz@gmail.com>
+Date:   Wed Sep 30 18:53:40 2026 -0400
+
+    good milestones reached proud of my accoumplishment and progress thats the most important part
+
+[33mcommit 0c1e1627b93c103e315c8c4776865889f24b8965[m
+Author: ExoticSolutions <1exoticeditz@gmail.com>
+Date:   Wed Sep 30 18:52:17 2026 -0400
+
+    good milestones reached proud of my accoumplishment and progress thats the most important part
+
+[33mcommit bd45b62e98ef7dd9107fe2935c1e98ad07318d5b[m
+Merge: c3cb01c 857ba7a
+Author: Cipherr <1exoticeditz@gmail.com>
+Date:   Wed Sep 30 17:52:58 2026 -0400
+
+    Merge pull request #6 from 0-Cipherr/refactor/vault-registry-architecture
+    
+    Refactor/vault registry architecture
+
+[33mcommit 857ba7a56695acf9582f937ad375149d841ea374[m
+Author: ExoticSolutions <1exoticeditz@gmail.com>
+Date:   Wed Sep 30 17:51:38 2026 -0400
+
+    almost done im fucking cooking
+
+[33mcommit 49f53ebc70636e9a0d982370c1dc4d8f311bdb3b[m
+Author: ExoticSolutions <1exoticeditz@gmail.com>
+Date:   Wed Sep 30 17:41:11 2026 -0400
+
+    almost done need to make bulkquote deployer in the myOapp
+
+[33mcommit 380e70bd8dc7ebb149be35c2f66c57300cb56905[m
+Author: ExoticSolutions <1exoticeditz@gmail.com>
+Date:   Wed Sep 30 16:06:43 2026 -0400
+
+    done
+
+[33mcommit 98a5cabe1f136ac005aae29c5cf46476c7f658ff[m
+Author: ExoticSolutions <1exoticeditz@gmail.com>
+Date:   Wed Sep 30 16:01:56 2026 -0400
+
+    updates need to use inteface version of dependencies to save space
+
+[33mcommit 74aa476720df1390910926f9bc2590e94c244e0d[m
+Author: ExoticSolutions <1exoticeditz@gmail.com>
+Date:   Wed Sep 30 15:38:41 2026 -0400
+
+    amaing success im fucking cooking hold on
+
+[33mcommit 2e58c2c05271b3255baef0fddc75683ea2aded3b[m
+Author: ExoticSolutions <1exoticeditz@gmail.com>
+Date:   Wed Sep 30 14:50:22 2026 -0400
+
+    commented tests out removed VaultRegistryRemaking
+
+[33mcommit 22a9c4d61d48b15c1c1508d2d1e481aded3e9a31[m
+Author: ExoticSolutions <1exoticeditz@gmail.com>
+Date:   Wed Sep 30 14:47:07 2026 -0400
+
+    everythign is coming niely together abtraction going good so far
+
+[33mcommit 8d0c2a22992adb1b852ef9ddbedf9e24cec3b93e[m
+Author: ExoticSolutions <1exoticeditz@gmail.com>
+Date:   Wed Sep 30 13:49:09 2026 -0400
+
+    updates
+
+[33mcommit c3cb01cbf67112e5675d0d33f1718d535a40d623[m
+Merge: e32a46d bcc9a3f
+Author: Cipherr <1exoticeditz@gmail.com>
+Date:   Wed Sep 30 12:56:03 2026 -0400
+
+    Merge pull request #5 from 0-Cipherr/refactor/vault-registry-architecture
+    
+    Refactor/vault registry architecture
+
+[33mcommit bcc9a3fae6e542938bfd15a8d8e26d65365ea14c[m
+Author: ExoticSolutions <1exoticeditz@gmail.com>
+Date:   Wed Sep 30 12:53:08 2026 -0400
+
+    adding stuff met with wall one peer per chain now using mapping of oapp instances to assign a oapp intance ot each vault tryna see how we can habndle alot of vaults in th emapping
+
+[33mcommit eae61725e5f889a2fe36fd870555477193047461[m
+Author: ExoticSolutions <1exoticeditz@gmail.com>
+Date:   Wed Sep 30 11:44:45 2026 -0400
+
+    almost done with my VaultRegistryMessenger
+
+[33mcommit e32a46dfadc36ed84fd5eb6cc62d88e3c6849ef7[m
+Merge: af6ee2f e8c84b9
+Author: Cipherr <1exoticeditz@gmail.com>
+Date:   Wed Sep 30 08:44:37 2026 -0400
+
+    Merge pull request #4 from 0-Cipherr/Vault-Registry-Cross_chain_esg
+    
+    Vault registry cross chain esg
+
+[33mcommit e8c84b90a0d3f6ea56b565764867e588edc66250[m[33m ([m[1;31morigin/Vault-Registry-Cross_chain_esg[m[33m)[m
+Author: ExoticSolutions <1exoticeditz@gmail.com>
+Date:   Wed Sep 30 08:42:42 2026 -0400
+
+    rrebuilding contract sachitecture
+
+[33mcommit b35b5e1c90882805b23ef3fac8661228e157bbc0[m
+Author: ExoticSolutions <1exoticeditz@gmail.com>
+Date:   Tue Sep 29 22:16:20 2026 -0400
+
+    factoryadded
+
+[33mcommit 26ebc763cf3d58c102bb8bebb37b454aabf62019[m
+Author: ExoticSolutions <1exoticeditz@gmail.com>
+Date:   Tue Sep 29 22:00:01 2026 -0400
+
+    sizing serror in registry rebuildign structure to test
+
+[33mcommit efb5fd70555f0a228cac210eee7b4502cc25a809[m
+Author: ExoticSolutions <1exoticeditz@gmail.com>
+Date:   Mon Sep 28 09:00:50 2026 -0400
+
+    almost ready for testing refactoring so far so good
+
+[33mcommit f98458b76f879ef108898636da1992e4c4a7176d[m
+Author: ExoticSolutions <1exoticeditz@gmail.com>
+Date:   Mon Sep 28 08:34:12 2026 -0400
+
+    refactoring and cleaning up code
+
+[33mcommit 761841ba83dd0389aa58950994e41ac8cf7d7fa2[m
+Author: ExoticSolutions <1exoticeditz@gmail.com>
+Date:   Mon Sep 28 00:15:01 2026 -0400
+
+    uodate
+
+[33mcommit a5403cb6d97765dc7d140ffaddf293734e5f23ce[m
+Author: ExoticSolutions <1exoticeditz@gmail.com>
+Date:   Mon Sep 28 00:09:56 2026 -0400
+
+    build should wrk now unsed var
+
+[33mcommit bab8ecb6781704542ea236fe031f894262d97df2[m
+Author: ExoticSolutions <1exoticeditz@gmail.com>
+Date:   Sun Sep 27 23:58:29 2026 -0400
+
+    updates
+
+[33mcommit af6ee2f87502891ccdbbfa149dfccc254186ecb5[m
+Merge: a141240 db38b5c
+Author: Cipherr <1exoticeditz@gmail.com>
+Date:   Fri Sep 25 21:35:53 2026 -0400
+
+    Merge pull request #3 from 0-Cipherr/Vault-Registry-Cross_chain_esg
+    
+    setting up tests tryna fix hats brekaing in forge build on github act…
+
+[33mcommit db38b5cc9cf15a499a1e208486d877958d82aff4[m
+Author: ExoticSolutions <1exoticeditz@gmail.com>
+Date:   Fri Sep 25 21:06:48 2026 -0400
+
+    setting up tests tryna fix hats brekaing in forge build on github actions
+
+[33mcommit a1412409bfbf212bb6f33a362844690911e8cd39[m
+Merge: 7fa7e96 f25ecb6
+Author: Cipherr <1exoticeditz@gmail.com>
+Date:   Fri Sep 25 19:31:57 2026 -0400
+
+    Merge pull request #2 from 0-Cipherr/Vault-Registry-Cross_chain_esg
+    
+    setting up test
+
+[33mcommit f25ecb6af396383c423861e454108b106eb2e3fd[m
+Author: ExoticSolutions <1exoticeditz@gmail.com>
+Date:   Fri Sep 25 19:30:47 2026 -0400
+
+    setting up test
+
+[33mcommit 7fa7e9633af3ae77e98b0a1640cd25a6a97afb5a[m
+Merge: fc278ef f9a6e5d
+Author: Cipherr <1exoticeditz@gmail.com>
+Date:   Fri Sep 25 18:44:54 2026 -0400
+
+    Merge pull request #1 from 0-Cipherr/Vault-Registry-Cross_chain_esg
+    
+    Vault registry cross chain esg
+
+[33mcommit f9a6e5d14d280cdc3e66eb7a45c5c8ea391b1aa3[m
+Author: ExoticSolutions <1exoticeditz@gmail.com>
+Date:   Fri Sep 25 18:43:22 2026 -0400
+
+    githbub action failed on build quick fix
+
+[33mcommit bb201cba4421cc92205fe384f81510a64ed43163[m
+Author: ExoticSolutions <1exoticeditz@gmail.com>
+Date:   Fri Sep 25 18:36:02 2026 -0400
+
+    done now testing and refactoring
+
+[33mcommit 49123a76044694065c95dbf4805ff07b67027705[m
+Author: ExoticSolutions <1exoticeditz@gmail.com>
+Date:   Fri Sep 25 18:30:44 2026 -0400
+
+    done making the main contract stuff now onto routing
+
+[33mcommit b597ae27bd1276e6e0cd9d07b6ffb31fb80247aa[m
+Author: ExoticSolutions <1exoticeditz@gmail.com>
+Date:   Fri Sep 25 17:36:16 2026 -0400
+
+    almost done for a test
+
+[33mcommit c7d13210078aac0b24259c8eb276d9b58f6eeac2[m
+Author: ExoticSolutions <1exoticeditz@gmail.com>
+Date:   Fri Sep 25 17:08:15 2026 -0400
+
+    makor updates simplified contracts added new contract to a=handle storing data etc almost done
+
+[33mcommit a4698cb31ed454a07c7ddf4509d1ee31c3d40728[m
+Author: ExoticSolutions <1exoticeditz@gmail.com>
+Date:   Fri Sep 25 05:02:12 2026 -0400
+
+    added som stuff to registry added a status struct we will use this very important . condition we use on deposits or possibly withdraws
+
+[33mcommit 65da277d9b07fe5bf9164db041897b84b433f665[m
+Author: ExoticSolutions <1exoticeditz@gmail.com>
+Date:   Fri Sep 25 04:39:12 2026 -0400
+
+    done
+
+[33mcommit d8f6c72b9c52c416a767674ce95d6ed8dc1a5bbf[m
+Author: ExoticSolutions <1exoticeditz@gmail.com>
+Date:   Thu Sep 24 13:35:04 2026 -0400
+
+    updates almost doen with registry lots added added quoter added multichain dpeloyment gotta work on multi chain quoter and tiny functions we need in registry then add strategy and boom we got this dont give up
+
+[33mcommit fc278ef8d47c5a08d551d6a5e93814ec678e2260[m
+Author: ExoticSolutions <1exoticeditz@gmail.com>
+Date:   Tue Sep 22 13:11:35 2026 -0400
+
+    construction of vult registry structure . registry controls all vaults , and api intteracts witht this contract throught the vault routes
+
+[33mcommit c4979bb72e2cb0fec8e6e07d806653243b53e933[m
+Author: ExoticSolutions <1exoticeditz@gmail.com>
+Date:   Tue Sep 22 07:48:41 2026 -0400
+
+    update
+
+[33mcommit ace732daea1096a9de9d09ea194df2c35498a5fd[m
+Merge: 91e186c 1ca6d8b
+Author: ExoticSolutions <1exoticeditz@gmail.com>
+Date:   Mon Sep 21 13:58:18 2026 -0400
+
+    :q
+    Merge branch 'main' of github.com:0-Cipherr/Avenor
+
+[33mcommit 91e186cf2bc4bd18cceb55962a71445a68aebc92[m
+Author: ExoticSolutions <1exoticeditz@gmail.com>
+Date:   Mon Sep 21 13:57:58 2026 -0400
+
+    making vault router
+
+[33mcommit 1ca6d8b8f55753ab3d1fa245c97300823c52773b[m
+Author: Cipherr <1exoticeditz@gmail.com>
+Date:   Sun Sep 20 21:26:15 2026 -0400
+
+    Update README with additional context and governance note
+    
+    Added a new section to clarify the purpose of Avenor and governance plans.
+
+[33mcommit 1765ab8b4fbe01e70d77d1aa67b67bad15e36dc8[m
+Author: Cipherr <1exoticeditz@gmail.com>
+Date:   Thu Sep 17 07:29:10 2026 -0400
+
+    Revise README for Avenor Contracts
+    
+    Updated README to reflect Avenor project details and removed Foundry references.
+
+[33mcommit fc81fa5a334228e936e25ff128e855b384ba5b55[m
+Author: ExoticSolutions <1exoticeditz@gmail.com>
+Date:   Thu Sep 17 07:24:53 2026 -0400
+
+    chore: remove files now tracked in .gitignore
+
+[33mcommit 31f1693f4372c9325926d51a14914c2f928b8126[m
+Author: ExoticSolutions <1exoticeditz@gmail.com>
+Date:   Thu Sep 17 07:23:57 2026 -0400
+
+    chore: remove files now tracked in .gitignore
+
+[33mcommit eb6bf8365946c83d9e8d4219c75a744f7ee2f235[m
+Author: ExoticSolutions <1exoticeditz@gmail.com>
+Date:   Thu Sep 17 07:22:12 2026 -0400
+
+    test actions update
+
+[33mcommit 5205ec888b83116cc6690965146c9d6ea9d27230[m
+Author: ExoticSolutions <1exoticeditz@gmail.com>
+Date:   Sat Sep 12 08:34:39 2026 -0400
+
+    updtes
+
+[33mcommit 7af60fe5af278464340d48d5809d2182db3e338a[m
+Author: ExoticSolutions <1exoticeditz@gmail.com>
+Date:   Sat Sep 12 08:28:15 2026 -0400
+
+    fully working syste all thats left is figuring out how birdge wors
+
+[33mcommit 55e56b6fe631e806d1104450ec198d289b05e1fa[m
+Author: ExoticSolutions <1exoticeditz@gmail.com>
+Date:   Sat Sep 12 08:16:55 2026 -0400
+
+    updates
+
+[33mcommit f4a3374b4a71ec91b63f55f918641c1206760a7b[m
+Author: ExoticSolutions <1exoticeditz@gmail.com>
+Date:   Fri Sep 11 20:18:46 2026 -0400
+
+    BINGO
+
+[33mcommit b146d43cc15d0287efd0b6b07d93e5bab04fbf9b[m
+Author: ExoticSolutions <1exoticeditz@gmail.com>
+Date:   Fri Sep 11 18:31:08 2026 -0400
+
+    added withdraw function to test final test is ready next after we do cross chain stuff
+
+[33mcommit 79b02d33397dc55a07d433565bdef8f7c17437e0[m
+Author: ExoticSolutions <1exoticeditz@gmail.com>
+Date:   Fri Sep 11 09:08:05 2026 -0400
+
+    deposits works with specified asset
+
+[33mcommit 6d287e68f97a4d5aa87bd5fc6f05b409e3f14b48[m
+Author: ExoticSolutions <1exoticeditz@gmail.com>
+Date:   Tue Sep 1 16:19:48 2026 -0400
+
+    done
+
+[33mcommit 5844649b0887b526eefab747688fac2b4aed60e4[m
+Author: ExoticSolutions <1exoticeditz@gmail.com>
+Date:   Tue Sep 1 12:33:20 2026 -0400
+
+    fixed somehting and refactored code for cleaner code and more abstraction try #5
+
+[33mcommit 1b09faf68476946ca8e6aa187efc585725b7dc45[m
+Author: ExoticSolutions <1exoticeditz@gmail.com>
+Date:   Tue Sep 1 12:29:45 2026 -0400
+
+    fixed somehting and refactored code for cleaner code and more abstraction try #4
+
+[33mcommit 4bb783494e84fcf529191d5f9028afb893cc56dc[m
+Author: ExoticSolutions <1exoticeditz@gmail.com>
+Date:   Tue Sep 1 12:21:29 2026 -0400
+
+    fixed somehting and refactored code for cleaner code and more abstraction try #2
+
+[33mcommit 7c29bbe97520550077bf8b1e08efb69d67822676[m
+Author: ExoticSolutions <1exoticeditz@gmail.com>
+Date:   Tue Sep 1 12:16:34 2026 -0400
+
+    fixed somehting and refactored code for cleaner code and more abstraction try #2
+
+[33mcommit 8e02d5bb6a9916465041d3b83167152744bb15d6[m
+Author: ExoticSolutions <1exoticeditz@gmail.com>
+Date:   Tue Sep 1 12:13:38 2026 -0400
+
+    fixed somehting and refactored code for cleaner code and more abstraction
+
+[33mcommit 0fc08d44dfda5f706d50c4d8e15bbccf32eeca68[m
+Author: ExoticSolutions <1exoticeditz@gmail.com>
+Date:   Tue Sep 1 11:02:41 2026 -0400
+
+    u:
+
+[33mcommit 1b1c180fd1e5b875d3ce0e8b3c0e975123a61371[m
+Author: ExoticSolutions <1exoticeditz@gmail.com>
+Date:   Tue Sep 1 09:07:04 2026 -0400
+
+    updates
+
+[33mcommit 03b495862d105f2c5368d2535b774b83c74dd9c1[m
+Author: ExoticSolutions <1exoticeditz@gmail.com>
+Date:   Tue Sep 1 07:42:27 2026 -0400
+
+    updates
+
+[33mcommit b5832ad6cd1c0b37555417f5f667be5a0e366c68[m
+Author: ExoticSolutions <1exoticeditz@gmail.com>
+Date:   Mon Aug 31 23:29:41 2026 -0400
+
+    o
+
+[33mcommit fc7741f15414df1a50dab01b0fbb4fda9b892e73[m
+Author: ExoticSolutions <1exoticeditz@gmail.com>
+Date:   Sun Aug 30 19:40:28 2026 -0400
+
+    test
+
+[33mcommit 2a32b425cefd9fc7d27cb90cc20dbeb703a2eb04[m
+Author: ExoticSolutions <1exoticeditz@gmail.com>
+Date:   Fri Aug 28 10:02:51 2026 -0400
+
+    update
+
+[33mcommit 03d09494b4beaaebbbec39283dcb38f462ea74a3[m
+Author: ExoticSolutions <1exoticeditz@gmail.com>
+Date:   Thu Aug 27 14:46:52 2026 -0400
+
+    left off at deposit() function made a struct to stroe depositor info makes it easier and was working on setDepositor()
+
+[33mcommit 2411d10c732a119474789c35d97ea86491da3d38[m
+Author: ExoticSolutions <1exoticeditz@gmail.com>
+Date:   Thu Aug 27 09:32:40 2026 -0400
+
+    nvm acutally we just need to add deploy on hub and we provide creation code and salt and it does the rest
+
+[33mcommit 6351780c4598e6cbbc8ace0a1483732c7ff28744[m
+Author: ExoticSolutions <1exoticeditz@gmail.com>
+Date:   Thu Aug 27 09:30:45 2026 -0400
+
+    ok edeploy again before u redeploy add something in facotry hub to store initial dpeloments of a contract before deploing deterministically store in creators created cotnrcts
+
+[33mcommit d3bfda12c55b2e201f1e4861757e94057f4c1cde[m
+Author: ExoticSolutions <1exoticeditz@gmail.com>
+Date:   Thu Aug 27 08:58:39 2026 -0400
+
+    almost done with scripts
+
+[33mcommit 130c02d54faeb9163c6b2ae86362ed802fa5ba57[m
+Author: ExoticSolutions <1exoticeditz@gmail.com>
+Date:   Wed Aug 26 22:13:07 2026 -0400
+
+    updates
+
+[33mcommit 99491268f8eaeeb1373ba5a9d40bd2be7c6ecdba[m
+Author: ExoticSolutions <1exoticeditz@gmail.com>
+Date:   Wed Aug 26 18:01:00 2026 -0400
+
+    more additions  added a new fucnction to the messenger get deployment information only the deployer for ex deployer of ht evaults has access to theis function you should add in the deployer as well
+
+[33mcommit a4f594fbeb9f091bbb71689298f81a9c528e76d1[m
+Author: ExoticSolutions <1exoticeditz@gmail.com>
+Date:   Wed Aug 26 17:57:14 2026 -0400
+
+    fist deploer script almost done flow is u have to deploy the contract first in the place u initia;ly use for example in the vault then with its info we do the deploy remmeber for creatoin code we gotta encode with constructor params
+
+[33mcommit baff8e3cab6b31eb8f5d0c51076b33fca19dc5e4[m
+Author: ExoticSolutions <1exoticeditz@gmail.com>
+Date:   Wed Aug 26 17:12:19 2026 -0400
+
+    updates creating script rn to test
+
+[33mcommit d1081e84a0a5f500bd08ce347a0dae5840970126[m
+Author: ExoticSolutions <1exoticeditz@gmail.com>
+Date:   Wed Aug 26 13:19:15 2026 -0400
+
+    all thats left is deploy and tes gonna have to dploy universal again manually not onchain im making new scripts for both files as u code the script look at code and check if anything missing or out of place pretty sure its fine to test
+
+[33mcommit c1f168d82de36653b8e6bb21e686d3c17c57d66c[m
+Author: ExoticSolutions <1exoticeditz@gmail.com>
+Date:   Wed Aug 26 08:34:58 2026 -0400
+
+    fixed the bulk deployer more cleaner and better now
+
+[33mcommit 4ad5fc5b89376295a1281d20683dceeadcbacd23[m
+Author: ExoticSolutions <1exoticeditz@gmail.com>
+Date:   Tue Aug 25 21:07:45 2026 -0400
+
+    updates
+
+[33mcommit ccd225275988a5f168d1a73ad97d5277bf829a85[m
+Author: ExoticSolutions <1exoticeditz@gmail.com>
+Date:   Tue Aug 25 00:18:20 2026 -0400
+
+    realized no need for special stuff for creating factories with same address on all chains on evm just got to make sure nonces (transaction count on a chain have to all have the same nonce i just deployed this on arb and base manually and it works pretty sick ngl this the dddy u can chekc on both chains : 0xe3EA6F670cD7A70289896B4fc47D0d794c7272eb
+
+[33mcommit fa50f0ef47b6dfe99d5a26e9c5b6ef62343b231d[m
+Author: ExoticSolutions <1exoticeditz@gmail.com>
+Date:   Thu Aug 20 21:48:41 2026 -0400
+
+    updates
+
+[33mcommit bab9c3c00436b2f5a352a99d0b748a9bd37d16b6[m
+Author: ExoticSolutions <1exoticeditz@gmail.com>
+Date:   Thu Aug 20 21:28:52 2026 -0400
+
+    updates
+
+[33mcommit a24393b4a3a0a93ad94de1ff28ebd41f86a6e74c[m
+Author: ExoticSolutions <1exoticeditz@gmail.com>
+Date:   Thu Aug 20 09:30:36 2026 -0400
+
+    added a new script file we need to have all facotries to have the same address on all chains before using we have t do manually
+
+[33mcommit 1b7b73a5403c0b96896d2dc04ea180b4db5797e4[m
+Author: ExoticSolutions <1exoticeditz@gmail.com>
+Date:   Thu Aug 20 09:20:59 2026 -0400
+
+    confirmed flow works now only issue on arbitrum the factory deplyed is not sae address as deterministic made on base
+
+[33mcommit 6d1096bc403acac92205b4420bb36a924c84d272[m
+Author: ExoticSolutions <1exoticeditz@gmail.com>
+Date:   Wed Aug 19 15:45:01 2026 -0400
+
+    look at deployer script verify parameters already deployed the messenger all left is deploy add deployer aspeer on messener and get quoe and deploy from deployer cross chain
+
+[33mcommit 066ac4e68048b05129b884adb5147ec5260bb355[m
+Author: ExoticSolutions <1exoticeditz@gmail.com>
+Date:   Wed Aug 19 12:26:50 2026 -0400
+
+    ready for testing some functions have to be commented out upon deployment
+
+[33mcommit 54e508c732db880249ce8b39cdc6aa74d0f9d5fc[m
+Author: ExoticSolutions <1exoticeditz@gmail.com>
+Date:   Wed Aug 19 12:24:02 2026 -0400
+
+    finishing touches on tests cleaning up code and renanming files still
+
+[33mcommit 5fc11564f8d18fb41b320b21e95cd5549ad0553f[m
+Author: ExoticSolutions <1exoticeditz@gmail.com>
+Date:   Tue Aug 18 09:29:46 2026 -0400
+
+    fix ide error
+
+[33mcommit 306b449f8e5dd8618909db19f9bc92414f83f7c0[m
+Author: ExoticSolutions <1exoticeditz@gmail.com>
+Date:   Tue Aug 18 09:28:05 2026 -0400
+
+    refactored and polished code shoudl work now just make script and deploy polish the mesenger a bit too before doing
+
+[33mcommit 2f52f404534ccc8f719111cad3fd89dbf3b5698a[m
+Author: ExoticSolutions <1exoticeditz@gmail.com>
+Date:   Sun Aug 16 13:35:20 2026 -0400
+
+    almsot odne ne last thing verify addFactoryMessengerPeers() as little bug then deploy create3Deployer i added contract then use create3deployer final and verify it works now  what was missing is mesaages go through but funcitons dont execute
+
+[33mcommit 0e2868ee7a3d7270ab77cdde7c920bc0ff0c6f17[m
+Author: ExoticSolutions <1exoticeditz@gmail.com>
+Date:   Sun Aug 16 11:51:40 2026 -0400
+
+    added recieverLibrary and uln config funcitons cleaned up reayd fordeployment verify on mssenger and deployer before doingmake sure these two functions ar ecalled when setting new peers for messengers on bth dpeloyr and messenger
+
+[33mcommit a28a0f88d583f9e622a5e8c84dbf527564f409a1[m
+Author: ExoticSolutions <1exoticeditz@gmail.com>
+Date:   Fri Aug 14 20:02:07 2026 -0400
+
+    all lef tot dpeloy
+
+[33mcommit a09305db85425b99267f50c8eb7b4b91ee9aa913[m
+Author: ExoticSolutions <1exoticeditz@gmail.com>
+Date:   Fri Aug 14 19:42:24 2026 -0400
+
+    Almost done closer to our solution now on gettingmessagequote function we get the quote but reverts there ask llm for answer use new options options and combined to show llm
+
+[33mcommit bfaf70cdbde10a9a45a13096014e68c0c78810ca[m
+Author: ExoticSolutions <1exoticeditz@gmail.com>
+Date:   Fri Aug 14 09:58:24 2026 -0400
+
+    messages not sending my code is good but a small mistake analyzing analyze _lzSend and _quote() added new functions singular quotes and cross chain deployments test throughouly console.log outputs when u come back redeplyo and use new setup
+
+[33mcommit 45141a12c79638924c270ca2b4c7033802511030[m
+Author: ExoticSolutions <1exoticeditz@gmail.com>
+Date:   Thu Aug 13 18:18:31 2026 -0400
+
+    updates
+
+[33mcommit 21b8d4e049582fab6fa59d331b8cc7ed545a84d9[m
+Author: ExoticSolutions <1exoticeditz@gmail.com>
+Date:   Wed Aug 12 10:13:35 2026 -0400
+
+    i found the mistae i didnt add the hubchain deployer as a peer in the messenger contract also i ust hae a getter to return the deterministic address on Creat3deployer so we can use to call properly and dpeloy factories another thing must make sperate test to apply proper addreses mixing both contracts only way our contracts will dpeloy properly cross chain
+
+[33mcommit 791870141d60221e8818ace49019998d7d49054e[m
+Author: ExoticSolutions <1exoticeditz@gmail.com>
+Date:   Tue Aug 11 23:48:28 2026 -0400
+
+    confusion upon deployment as deploment addreses are not the same on btoh chains mayble my deployment flow is incorrect will check thoughroly tommorow :)
+
+[33mcommit cfeffa8bf76ecaa703aa0f952c72a8e348ef0cab[m
+Author: ExoticSolutions <1exoticeditz@gmail.com>
+Date:   Tue Aug 11 21:48:36 2026 -0400
+
+    figuring out how to use properly deployeddeterministic address so it matche shub chain address
+
+[33mcommit 71ba03bdbc84265144a2ff3e4133df221b4697ac[m
+Author: ExoticSolutions <1exoticeditz@gmail.com>
+Date:   Tue Aug 11 21:26:16 2026 -0400
+
+    found a mistake was callling functions in deployer from non determisitc address
+
+[33mcommit f1725f3feceb4b86b6ee8d3d7009f029577b67f1[m
+Author: ExoticSolutions <1exoticeditz@gmail.com>
+Date:   Tue Aug 11 09:51:04 2026 -0400
+
+    deplyoments work now we must verify factory addresses are the same on both chains deployed on
+
+[33mcommit 681c1a9a25f5d0ea337004de8db03534d73480c1[m
+Author: ExoticSolutions <1exoticeditz@gmail.com>
+Date:   Sat Aug 8 15:28:18 2026 -0400
+
+    litle bug to fix i think its fees aray in deploy quoter in create3deployer out of bounds error validate all arrays in the code nxt tieme we work on r project
+
+[33mcommit cc3ac075d0b96ef4a709fcaaf33a8d52efe53d32[m
+Author: ExoticSolutions <1exoticeditz@gmail.com>
+Date:   Sat Aug 8 15:12:32 2026 -0400
+
+    ready to test depoyment of factory
+
+[33mcommit 84b8fcac73f6d1bb0d4b79fedee9b32c89f9d049[m
+Author: ExoticSolutions <1exoticeditz@gmail.com>
+Date:   Sat Aug 8 14:31:44 2026 -0400
+
+    Deployed a sample messenger on arbitrum fixing deployer to deploy on opsepolia and test if determisitc addresses work as intended befoe progressing structing properly so flow is clean and good
+
+[33mcommit 5d314137277e6cb6db67700cd7c8a2072b50316a[m
+Author: ExoticSolutions <1exoticeditz@gmail.com>
+Date:   Sat Aug 8 12:14:25 2026 -0400
+
+    updates
+
+[33mcommit 0d4204844d4a69622ac8f76f181c37e5f8291b1a[m
+Author: ExoticSolutions <1exoticeditz@gmail.com>
+Date:   Sat Aug 8 01:39:03 2026 -0400
+
+    began proper deployment as building all at once without testing is a big mistake strating off by building the create 3 factory deployers and building a proper system on createdeployfactory on one chain and factorymessenger on all chains to facilitate deploying factories on all chains this allows us to dpeloy vaults with same address on all chiains to make moving funds accross evm chains easier gotta find soltion for chains with different address standards such as solanetc documents the factory deployer properly tm we test this section utnil tests are not complete we will not conntinue all tests must pass before moving on to the next phase projects purpose has changed making a banger
+
+[33mcommit c828329740df25fd3e45f3508f5f6e3eb8ccc0ce[m
+Author: ExoticSolutions <1exoticeditz@gmail.com>
+Date:   Thu Aug 6 18:54:05 2026 -0400
+
+    Resturctring test so its more organized and easier to wrk with added some  conditions to generate deployFactory so if we are deploying a address on another chain with determisnistic address caller msut provid salt creation code and deployment if not then deploy a new factory for user and output info
+
+[33mcommit 0019b1f51edfcf9969f29e07ba4cffb9053c2a70[m
+Author: ExoticSolutions <1exoticeditz@gmail.com>
+Date:   Thu Aug 6 18:00:57 2026 -0400
+
+    COmpleted first test dpeloyment of Create3Factory we plan on launching a factory on all chains for our product. THepurpose of this factory isto allow or  determiistic addresses all across evm it makes thigns simpler as we only have the same address for all vaults on all chains in comparison to a regular dpeloyment all addresses are different as we add more chains on evm the list will grow insanely large and will cost more to execute transactions in vaults
+
+[33mcommit 253d0a722c88a618aae448007aae59ff289564ec[m
+Author: ExoticSolutions <1exoticeditz@gmail.com>
+Date:   Thu Aug 6 17:24:22 2026 -0400
+
+    first commit
