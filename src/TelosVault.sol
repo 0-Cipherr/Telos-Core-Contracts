@@ -62,56 +62,92 @@ contract TelosVault is VaultMath {
         require(stargate.token() == address(0), "Not native ETH pool");
     }
 
-    function deposit(uint256 _amount) public payable {
-        require(_amount == msg.value, "Incorrect ETH amount");
+    function deposit(uint256 _amountETH) public payable {
+        require(_amountETH == msg.value, "Incorrect ETH amount");
 
-        totalAssets += _amount;
+        totalAssets += _amountETH;
     }
 
     function addAuhtorizd(address _newAuth) public onlyAuthorized {
         authorized.push(_newAuth);
     }
 
-    function isInStrategy() {}
-
-    function vaulthasEnough() public view returns (bool) {
-        return true;
+    function vaulthasEnough(uint256 _ETHAmountRequested) public view returns (bool) {
+        return totalAssets > _ETHAmountRequested;
     }
 
-    function splitFees(uint256 _amount) public {
-        require(totalAssets > _amount, "Not enough to withdraw");
-        uint256 creatorCharge = multPercentage(creatorFee, _amount);
+    function calculateFees(uint256 _ETHAmountRequested)
+        public
+        view
+        returns (uint256 _amountLeft, uint256 creatorCharge, uint256 protoclCharge)
+    {
+        require(totalAssets > _ETHAmountRequested, "Not enough to withdraw");
+        uint256 creatorCharge = multPercentage(creatorFee, _ETHAmountRequested);
 
-        uint256 protocolCharge = multPercentage(protocolFee, _amount);
-        (uint256 nativeFeeCreator, uint256 amountCreatorRecieved) = bridgeQuote(totalAssets - creatorCharge);
+        uint256 protocolCharge = multPercentage(protocolFee, _ETHAmountRequested);
 
-        (uint256 nativeFeeProtocol, uint256 amountProtocolRecieved) = bridgeQuote(totalAssets - creatorCharge);
-
-        bridge(totalAssets - creatorCharge, creator);
-        bridge(totalAssets - protocolCharge, protocol);
+        return totalAssets - ((totalAssets - creatorCharge) + (totalAssets - protocolCharge));
     }
 
-    function withdraw(address payable _receiver, uint256 _amount) public onlyAuthorized {
+    function splitFees(uint256 creatorCharge, uint256 protocolCharge) public {
+        (bool success,) = address(creator).call{value: creatorCharge}("");
+
+        (bool success,) = address(creator).call{value: protocolCharge}("");
+    }
+
+    function splitFeesCrossChain(
+        address _withdrawer,
+        uint256 _ETHToRecieve,
+        uint256 creatorCharge,
+        uint256 protocolCharge
+    ) public {
+        (uint256 creatorBridgeFee, uint256 amountCreatorRecieved) = bridgeQuote(totalAssets - creatorCharge);
+
+        (uint256 protocolBridgeFee, uint256 amountProtocolRecieved) = bridgeQuote(protocolCharge, protocol);
+        (uint256 withdrawerFee, uint256 amountWithdrawerRecieved) = bridgeQuote(_ETHToRecieve, _withdrawer);
+        bridge(amountCreatorRecieved + withdrawerFee, creator);
+        bridge(protocolCharge + amountProtocolRecieved, protocol);
+        bridge(_ETHToRecieve, _withdrawer);
+    }
+
+    function withdraw(address payable _receiver, uint256 _ETHAmountRequested) public onlyAuthorized {
         require(_amount <= totalAssets, "Insufficient assets");
+        (uint256 _amountLeft, uint256 creatorCharge, uint256 protocolCharge) = calculateFees(_ETHAmountRequested);
+        totalAssets -= _ETHAmountRequested;
 
-        totalAssets -= _amount;
+        if (isVaultHub()) {
+            splitFeesCrossChain(_reciever, _amountLeft, creatorCharge, protocolCharge);
+        } else {
+            splitFees(creatorCharge, protocolCharge);
+            payWallet(_receiver, _amountLeft);
+        }
+    }
 
-        (bool success,) = _receiver.call{value: _amount}("");
-        require(success, "Withdrawal failed");
+    function payWallet(address _reciever, uint256 _ETHAmountToPay) {
+        (bool success,) = address(_reciever){value: _ETHAmountToPay}("");
+    }
+
+    function isVaultHub() public returns (bool) {
+        return endpointId == hubEid;
+    }
+
+    function genOptions() public view returns (bytes memory) {
+        return bytes(0);
     }
 
     // Get Stargate bridge fee and estimated destination amount
-    function bridgeQuote(uint256 _amount, address _receiver)
+    function bridgeQuote(uint256 _ETHAmountToBridge, address _receiver)
         public
         view
         returns (uint256 nativeFee, uint256 amountReceived)
     {
+        bytes memory _generatedOptions = genOptions();
         SendParam memory sendParam = SendParam({
             dstEid: endpointId,
             to: bytes32(uint256(uint160(_receiver))),
-            amountLD: _amount,
+            amountLD: _ETHAmountToBridge,
             minAmountLD: 0,
-            extraOptions: "",
+            extraOptions: _generatedOptions,
             composeMsg: "",
             oftCmd: ""
         });
@@ -125,14 +161,22 @@ contract TelosVault is VaultMath {
         return (fee.nativeFee, receipt.amountReceivedLD);
     }
 
+    function composeMessage() public view returns (bytes memory) {
+        return bytes(0);
+    }
+
+    function generateOFTCmd() public view returns (bytes memory) {
+        return bytes(0);
+    }
+
     // Bridge native ETH held by this vault to another chain
-    function bridge(uint256 _amount, address _receiver) public onlyAuthorized {
+    function bridge(uint256 _ETHAmountToBridge, address _receiver) public onlyAuthorized {
         require(_amount <= totalAssets, "Insufficient assets");
 
         SendParam memory sendParam = SendParam({
             dstEid: endpointId,
             to: bytes32(uint256(uint160(_receiver))),
-            amountLD: _amount,
+            amountLD: _ETHAmountToBridge,
             minAmountLD: 0,
             extraOptions: "",
             composeMsg: "",

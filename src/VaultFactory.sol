@@ -7,6 +7,7 @@ pragma solidity ^0.8.24;
 /// @dev Explain to a developer any extra details
 //
 //
+import {TelosVault} from "./TelosVault.sol";
 
 contract VaultFactory {
     address factoryDelegate;
@@ -24,7 +25,10 @@ contract VaultFactory {
         factoryDelegate = _newDelegate;
     }
 
-    function deployVaultSingle() public payable returns (address vaultAddress, uint256 vaultId) {}
+    function deployVaultSingle() public payable returns (address vaultAddress, uint256 vaultId) {
+        TelosVault _vaultDeployed =
+            new TelosVault(_endpointId, _vaultId, _creator, _agent, _stargate, _creatorFee, _protocolFee, _hubEid);
+    }
 
     function deployVaultMultiChains() public payable returns (uint256 vaultId) {}
 }

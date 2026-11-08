@@ -3,28 +3,41 @@ pragma solidity ^0.8.24;
 
 interface IStrategy {
     struct StrategyConfig {
-        address asset;
-        address protocol;
-        address vault;
-        uint256 chainId;
-        uint256 allocation;
-        uint256 maxDeposit;
-        uint256 minDeposit;
+        address asset; // accepted asset, address(0) = native ETH
+        address protocol; // external protocol this strategy deploys into
+        address vault; // vault that owns this strategy
+        uint256 chainId; // chain this strategy runs on
+        uint256 allocation; // share of vault funds in basis points (10000 = 100%)
+        uint256 maxDeposit; // max amount per deposit, in asset units
+        uint256 minDeposit; // min amount per deposit, in asset units
     }
 
-    function initialize(
-        StrategyConfig calldata config,
-        bytes calldata protocolConfig
-    ) external;
+    event Deposited(address indexed caller, uint256 amount, uint256 shares);
+    event Withdrawn(address indexed caller, uint256 requested, uint256 assets);
+    event Harvested(uint256 profit);
 
-    function deposit(uint256 amount) external returns (uint256 shares);
+    error StrategyPaused();
+    error InvalidAmount(uint256 amount, uint256 min, uint256 max);
+    error InsufficientAssets(uint256 requested, uint256 available);
 
+    function initialize(StrategyConfig calldata config) external;
+
+    /// @notice Deposits `amount` of the configured asset. Native ETH is sent as msg.value.
+    /// @return shares Shares minted for the deposit
+    function deposit(uint256 amount) external payable returns (uint256 shares);
+
+    /// @notice Withdraws `amount` and sends the assets to msg.sender.
+    /// @return assets Assets actually returned (can differ from `amount` due to fees or slippage)
     function withdraw(uint256 amount) external returns (uint256 assets);
 
+    /// @notice Collects yield and reinvests it.
+    /// @return profit Yield collected, in asset units
     function harvest() external returns (uint256 profit);
 
+    /// @return Total assets held by the strategy, in asset units
     function totalAssets() external view returns (uint256);
 
+    /// @return APY in basis points (10000 = 100%)
     function getAPY() external view returns (uint256);
 
     function getConfig() external view returns (StrategyConfig memory);
