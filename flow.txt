@@ -1,0 +1,41 @@
+All state from Solidity will be mostly handled in the DB.
+
+Reason:
+
+1. Altering state in Solidity is expensive. (Even if you're using a contract that isn't data heavy, you're still spending and wasting a lot of money, even on an L2 where gas is cheap.)
+
+2. This system is composed of a lot of data and merging of different metrics, so a DB is better as we are going to be requesting it all the time.
+
+3. No need for the Etherscan API, which has rate limits and is expensive. We have no money, so we have to find ways to work around it.
+
+4. Makes my life way easier. I can host my own DB and connect my control, making sure everything is safe for me and my users.
+
+
+Vault Factory:
+
+Each chain will have a factory that deploys a vault native:
+
+The DB has info about each factory deployed across all chains with its proper config.
+
+Only one function to deploy native. No need for a function to multichain deploy at all, only native.
+
+factoryDelegate: the creator or owner of the factory (initially the deployer)
+
+currentId: current length of the vaults deployed. It increases as we deploy more vaults on the chain.
+
+nativeEndpointId: the LayerZero endpoint for the chain the factory is deployed on.
+
+hubEndpointId: this is one of the most important variables. The purpose of our project is to expose users to more yield opportunities from all chains from one chain, so we need hubEndpointId. This is where our users originate from and where our app is located. This is important.
+
+stargate: this is the address of the deployment by Stargate of the contract that allows us to bridge cross-chain, LayerZero style.
+
+For our product, our only asset is ETH. Later on, we figure out how to aggregate other assets and allow all sorts of assets for deployVaultSingle.
+
+
+The key is making a system simple.
+
+If a system or structure is too complex, that means there is something wrong. Think more about simplicity. That's where it gets tricky. When it's complicated, you just keep adding bull.
+
+
+Here is the flow:
+
