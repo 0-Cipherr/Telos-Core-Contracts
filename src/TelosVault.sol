@@ -14,9 +14,9 @@ contract TelosVault is VaultMath {
 
     IStargate public immutable stargate;
 
-    uint256 creatorFee;
+    uint256 public creatorFee;
 
-    uint256 protocolFee;
+    uint256 public protocolFee;
 
     uint32 hubEid;
     address creator;
